@@ -11,9 +11,9 @@ import requests
 import os
 import time
 
-if __name__ == '__main__':
+def grab():
     list_url = []
-    for num in range(194,190,-1): #Start from page 194 to 190, about 100 pics
+    for num in range(194,193,-1): #Start from page 194 to 190, about 100 pics
         url = 'http://jandan.net/ooxx/page-%s#comments' % num
         headers = {
                 "User-Agent":"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     for each_img in list_url:
         img_info = each_img.split('.')
         filetype = '.' + img_info[-1]
-        filename = str(filenum)+filetype
+        filename = str(filenum) + filetype
         print('Start Downloading: ' + filename)
         
         #Download all pics to folder named 'images', create one automatically if not exists
@@ -43,7 +43,10 @@ if __name__ == '__main__':
         #Download the pics
         urlretrieve(each_img,'images/'+filename)
         
-        filenum = filenum + 1
+        filenum += 1
         time.sleep(1)#Stop 1 sec to pretend like a human
         
     print('Complete!')
+
+if __name__ == '__main__':
+    grab()
