@@ -11,9 +11,24 @@ import requests
 import os
 import time
 
-def grab():
+def grab(start_page,ending_page):  
+    if start_page == "" or ending_page == "":
+        print("Please Check Your Input(s)!!!")
+        return
+    
+    print("Start from page " + str(start_page) + " to page " + str(ending_page))
+    
+    if not isinstance(start_page,int):
+        start_page = int(start_page)     
+    if not isinstance(ending_page,int):
+        ending_page = int(ending_page)
+        
     list_url = []
-    for num in range(194,190,-1): #Start from page 194 to 190, about 100 pics
+    spacing = -1
+    if start_page < ending_page:
+        spacing = 1
+        
+    for num in range(start_page,ending_page,spacing): #Start from page 194 to 190, about 100 pics
         url = 'http://jandan.net/ooxx/page-%s#comments' % num
         headers = {
                 "User-Agent":"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
@@ -49,4 +64,4 @@ def grab():
     print('Complete!')
 
 if __name__ == '__main__':
-    grab()
+    grab(194,190)
