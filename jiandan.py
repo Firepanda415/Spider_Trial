@@ -11,7 +11,8 @@ import requests
 import os
 import time
 
-def grab(start_page,ending_page):  
+def grab(start_page,ending_page, lim, amount):  
+    
     if start_page == "" or ending_page == "":
         print("Please Check Your Input(s)!!!")
         return
@@ -37,8 +38,11 @@ def grab(start_page,ending_page):
         req.encoding = 'utf-8'
         html = req.text
         bf = BeautifulSoup(html, 'lxml') #Sort the page text
-        targets_url = bf.find_all(class_='view_img_link') #Find the links of all pics
-
+        #targets_url = bf.find_all(class_='view_img_link') #Find the links of all pics
+        if not lim:
+            targets_url = bf.find_all(class_='view_img_link')
+        else:
+            targets_url = bf.find_all(class_='view_img_link', limit=amount)
         for each in targets_url:
             list_url.append('http:' + each.get('href')) #Rewrite the link infor
 
@@ -64,4 +68,4 @@ def grab(start_page,ending_page):
     print('Complete!')
 
 if __name__ == '__main__':
-    grab(194,190)
+    grab(200,199,True,1)

@@ -50,13 +50,31 @@ start_page.grid(row=2,column=1,columnspan = 2)
 ending_page = ttk.Entry(frame, width=15)
 ending_page.grid(row=3,column=1,columnspan = 2)
 
+pic_num = ttk.Entry(frame, width=15)
+pic_num.grid(row=4,column=1,columnspan = 2)
+
 sp_label = ttk.Label(frame, text = 'Start Page', font = 'Times 10')
 sp_label.grid(row=2,column=0)
 
 ep_label = ttk.Label(frame, text = 'End Page', font = 'Times 10')
 ep_label.grid(row=3,column=0)
 
-s_button = ttk.Button(frame, text='Start', command=lambda: jiandan.grab(start_page.get(),ending_page.get()))
+def get(string):
+    if string == '':
+        lim = False
+        pic = 0
+        return lim, pic
+    else:
+        lim = True
+        pic = int(pic_num.get())
+        return lim, pic
+    
+pic_label = ttk.Label(frame, text = 'Pic Number', font = 'Times 10')
+pic_label.grid(row=4,column=0)
+
+s_button = ttk.Button(frame, text='Start', command=lambda: jiandan.grab(start_page.get(),
+                                                                        ending_page.get(),get(pic_num.get())[0],
+                                                                        get(pic_num.get())[1]))
 s_button.grid(row=5,column=0,columnspan = 2)
 
 q_button = ttk.Button(frame, text='Quit')
