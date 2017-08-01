@@ -13,11 +13,6 @@ import time
 
 def grab(root,state_label,start_page,ending_page, lim, amount):  
     
-    if start_page == "" or ending_page == "":
-        print("Please Check Your Input(s)!!!")
-        state = "Please Check Your Input(s)!!!"
-        return
-    
     print("Start from page " + str(start_page) + " to page " + str(ending_page))
     state_label['text'] = "Start from page " + str(start_page) + " to page " + str(ending_page)
     root.update()
@@ -33,7 +28,7 @@ def grab(root,state_label,start_page,ending_page, lim, amount):
         spacing = 1
     
     exit_flag=0
-    for num in range(start_page,ending_page,spacing): #Start from page 194 to 190, about 100 pics
+    for num in range(start_page,ending_page+spacing,spacing): #Start from page 194 to 190, about 100 pics
         url = 'http://jandan.net/ooxx/page-%s#comments' % num
         headers = {
                 "User-Agent":"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
@@ -85,6 +80,7 @@ def grab(root,state_label,start_page,ending_page, lim, amount):
     print('Complete!')
     state_label['text'] ='Complete!'
     root.update()
+    return 0
 
 if __name__ == '__main__':
     grab(200,199,True,1)

@@ -5,16 +5,23 @@ Created on Mon Jul 24 09:32:43 2017
 @author: hazhou
 """
 
+import threading
 import tkinter
 from tkinter import ttk
 import jiandan
 import newest_page
-import _thread
 
-#Start a new thread to grab the pics
-def grab(root,state_label,start_page,ending_page, lim, amount):
-    _thread.start_new_thread(
-            jiandan.grab(root,state_label,start_page,ending_page, lim, amount))
+class myThread (threading.Thread): 
+    def __init__(self, root,state_label,start_page,ending_page, lim, amount):
+        threading.Thread.__init__(self)
+        self.root = root
+        self.state_label = state_label
+        self.start_page = start_page
+        self.ending_page = ending_page
+        self.lim = lim
+        self.amount = amount
+    def run(self):               
+        jiandan.grab(self.root,self.state_label,self.start_page,self.ending_page,self.lim,self.amount)
 
 #Create an warn object that could create a warning window
 class warn(object):
@@ -40,11 +47,11 @@ class warn(object):
 class proceed(warn):
     return_value = False
     def __init__(self, message):
-        self.message = message
+        warn.__init__(self,message)
         
     def return_true(self, root):
+        self.return_value = True
         root.destroy()
-        self.return_value = True        
     
     def go_on(self, root, txt, r, c):
         go_button = ttk.Button(root, text=txt)
@@ -59,8 +66,8 @@ class proceed(warn):
     def tk_proceed(self):
         root = tkinter.Tk()
         self.ml(root, 0, 0, 3)
-        self.go_on(root, 'Go on', 1, 0)
-        self.super_q(root, 'Quit', 2, 0)
+        self.go_on(root, 'Go on', 1, 1)
+        self.super_q(root, 'Quit', 2, 1)
         root.mainloop()
 
 #Ask for user's consent to proceed
@@ -113,22 +120,17 @@ def main():
     ending_page.grid(row=3,column=1,columnspan = 2)
     
     pic_num = ttk.Entry(frame, width=15)
-    #pic_num.grid(row=5,column=1,columnspan = 2)
     
     pic_label = ttk.Label(frame, text = 'Pic Number', font = 'Times 10')
-    #pic_label.grid(row=5,column=0)
-    
+
     #The action of the pic_num_ind: Show or hide the label and entry of 'Pic Number'
     def callCheckButton(root,booleanvar,widgets,rows,columns,columnspans):
         if booleanvar.get():
             for i in range(0,len(widgets)):
                 widgets[i].grid(row=rows[i],column=columns[i],columnspan = columnspans[i])
-                root.update();
         else:
             for i in range(0,len(widgets)):
                 widgets[i].grid_remove()
-                root.update()
-    
     var = tkinter.BooleanVar()
     pic_num_ind = ttk.Checkbutton(frame, text = 'Assign Picture Quantity', variable = var,
                                command=lambda: callCheckButton(root,var,[pic_num,pic_label],[5,5],[1,0],[2,1]))
@@ -140,7 +142,12 @@ def main():
     
     ep_label = ttk.Label(frame, text = 'End Page', font = 'Times 10')
     ep_label.grid(row=3,column=0)
-     
+    
+    state_label = ttk.Label(frame, text = "Please Input Pages", font = 'Times 10')
+    state_label.grid(row=7,column=0,columnspan=3)
+    
+    grab = myThread(root,state_label,1,1,True,0) #Create a thread to wait for the inputs
+    
     #Check if the starting page and the ending page are illegal
     def check_run():
         try: 
@@ -156,28 +163,47 @@ def main():
             warn('Ending page exceeding page limit').tk_instance()
             return False
         return True
+    
     #Grab the pictures unless the pic_num input is illegal
     def get_num(booln):
         if check_run(): 
-            if booln:
-                try: 
+            try: 
+                if booln:
                     num = int(pic_num.get())
-                    grab(root,state_label,start_page.get(),ending_page.get(), var.get(),num)
-                except:
-                    warn('Please enter an integer for pic quantity!').tk_instance()
+                else:
+                    num = 0
+                grab.start_page = start_page.get()
+                grab.ending_page = ending_page.get()
+                grab.amount = num
+                grab.lim = var.get()
+                grab.setDaemon(True)
+            except:
+                warn('Please enter an integer for pic quantity!').tk_instance()
+        
+    def call_start():
+        get_num(var.get())
+        grab.start()
+    s_button = ttk.Button(frame, text='Start', command=lambda: call_start())
+    s_button.grid(row=6,column=0)
+    
+    pausing = False
+    def pause_grab(button):
+        if True:
+            global pausing
+            if pausing:
+                button['text'] = 'Continue'
+                pausing = not pausing
             else:
-                grab(root,state_label,start_page.get(),ending_page.get(), var.get(),0)
-                
+                button['text'] = 'Pause'
+                pausing = not pausing
+    p_button = ttk.Button(frame, text='Pause', command=lambda: pause_grab(p_button))
+    p_button.grid(row=6,column=1)
     
-    s_button = ttk.Button(frame, text='Start', command=lambda: get_num(var.get()))
-    s_button.grid(row=6,column=0,columnspan = 2)
-    
+    def call_quit():
+        root.destroy()
     q_button = ttk.Button(frame, text='Quit')
     q_button.grid(row=6,column=2)
-    q_button['command'] = lambda: root.destroy()
-    
-    state_label = ttk.Label(frame, text = "Please Input Pages", font = 'Times 10')
-    state_label.grid(row=7,column=0,columnspan=3)
+    q_button['command'] = lambda: call_quit()
     
     root.mainloop()
 
