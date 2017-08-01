@@ -38,23 +38,23 @@ class warn(object):
 
 #Expand the warn object so that it could return a boolean value        
 class proceed(warn):
-    return_value = True
+    return_value = False
     def __init__(self, message):
         self.message = message
         
+    def return_true(self, root):
+        root.destroy()
+        self.return_value = True        
+    
     def go_on(self, root, txt, r, c):
         go_button = ttk.Button(root, text=txt)
         go_button.grid(row=r,column=c)
-        go_button['command'] = lambda: root.destroy()
-        
-    def return_false(self, root):
-        root.destroy()
-        self.return_value = False
-        
+        go_button['command'] = lambda: self.return_true(root)       
+
     def super_q(self, root, txt, r, c):
         q_button = ttk.Button(root, text=txt)
         q_button.grid(row=r,column=c)
-        q_button['command'] = lambda: self.return_false(root)
+        q_button['command'] = lambda: root.destroy()
     
     def tk_proceed(self):
         root = tkinter.Tk()
