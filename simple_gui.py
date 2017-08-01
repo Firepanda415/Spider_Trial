@@ -9,6 +9,12 @@ import tkinter
 from tkinter import ttk
 import jiandan
 import newest_page
+import _thread
+
+#Start a new thread to grab the pics
+def grab(root,state_label,start_page,ending_page, lim, amount):
+    _thread.start_new_thread(
+            jiandan.grab(root,state_label,start_page,ending_page, lim, amount))
 
 #Create an warn object that could create a warning window
 class warn(object):
@@ -156,11 +162,11 @@ def main():
             if booln:
                 try: 
                     num = int(pic_num.get())
-                    jiandan.grab(root,state_label,start_page.get(),ending_page.get(), var.get(),num)
+                    grab(root,state_label,start_page.get(),ending_page.get(), var.get(),num)
                 except:
                     warn('Please enter an integer for pic quantity!').tk_instance()
             else:
-                jiandan.grab(root,state_label,start_page.get(),ending_page.get(), var.get(),0)
+                grab(root,state_label,start_page.get(),ending_page.get(), var.get(),0)
                 
     
     s_button = ttk.Button(frame, text='Start', command=lambda: get_num(var.get()))
