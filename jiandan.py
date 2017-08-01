@@ -11,13 +11,16 @@ import requests
 import os
 import time
 
-def grab(start_page,ending_page, lim, amount):  
+def grab(root,state_label,start_page,ending_page, lim, amount):  
     
     if start_page == "" or ending_page == "":
         print("Please Check Your Input(s)!!!")
+        state = "Please Check Your Input(s)!!!"
         return
     
     print("Start from page " + str(start_page) + " to page " + str(ending_page))
+    state_label['text'] = "Start from page " + str(start_page) + " to page " + str(ending_page)
+    root.update()
     
     if not isinstance(start_page,int):
         start_page = int(start_page)     
@@ -49,7 +52,7 @@ def grab(start_page,ending_page, lim, amount):
             for each in targets_url:
                 if len(list_url) < amount:
                     list_url.append('http:' + each.get('href')) #Rewrite the link infor
-                else:
+                else: #Stop when we have enough pics
                     exit_flag=1
                     break
             
@@ -57,6 +60,8 @@ def grab(start_page,ending_page, lim, amount):
             break
 
     print('Obtained all links')
+    state_label['text'] = 'Obtained all links'
+    root.update()
     
     filenum = 1
     for each_img in list_url:
@@ -64,6 +69,8 @@ def grab(start_page,ending_page, lim, amount):
         filetype = '.' + img_info[-1]
         filename = str(filenum) + filetype
         print('Start Downloading: ' + filename)
+        state_label['text'] ='Start Downloading: ' + filename
+        root.update()
         
         #Download all pics to folder named 'images', create one automatically if not exists
         if 'images' not in os.listdir():
@@ -76,6 +83,8 @@ def grab(start_page,ending_page, lim, amount):
         time.sleep(1)#Stop 1 sec to pretend like a human
         
     print('Complete!')
+    state_label['text'] ='Complete!'
+    root.update()
 
 if __name__ == '__main__':
     grab(200,199,True,1)

@@ -63,10 +63,6 @@ def go_on():
     ask.tk_proceed()
     return ask.return_value
 
-def grid_widgets(widgets,rows,columns,columnspans):
-    for i in range(0,len(widgets)):
-        widgets[i].grid(row=rows[i],column=columns[i],columnspan = columnspans[i])
-
 #The main root of the pic grabber
 def main():
     root = tkinter.Tk()
@@ -116,10 +112,22 @@ def main():
     pic_label = ttk.Label(frame, text = 'Pic Number', font = 'Times 10')
     #pic_label.grid(row=5,column=0)
     
+    #The action of the pic_num_ind: Show or hide the label and entry of 'Pic Number'
+    def callCheckButton(root,booleanvar,widgets,rows,columns,columnspans):
+        if booleanvar.get():
+            for i in range(0,len(widgets)):
+                widgets[i].grid(row=rows[i],column=columns[i],columnspan = columnspans[i])
+                root.update();
+        else:
+            for i in range(0,len(widgets)):
+                widgets[i].grid_remove()
+                root.update()
+    
     var = tkinter.BooleanVar()
     pic_num_ind = ttk.Checkbutton(frame, text = 'Assign Picture Quantity', variable = var,
-                                  command=lambda: grid_widgets([pic_num,pic_label],[5,5],[1,0],[2,1]))
+                               command=lambda: callCheckButton(root,var,[pic_num,pic_label],[5,5],[1,0],[2,1]))
     pic_num_ind.grid(row=4, column=1, columnspan=1)
+
     
     sp_label = ttk.Label(frame, text = 'Start Page', font = 'Times 10')
     sp_label.grid(row=2,column=0)
@@ -148,12 +156,11 @@ def main():
             if booln:
                 try: 
                     num = int(pic_num.get())
-                    print("limit is %d pictures"%num)
-                    jiandan.grab(start_page.get(),ending_page.get(), var.get(),num)
+                    jiandan.grab(root,state_label,start_page.get(),ending_page.get(), var.get(),num)
                 except:
                     warn('Please enter an integer for pic quantity!').tk_instance()
             else:
-                jiandan.grab(start_page.get(),ending_page.get(), var.get(),0)
+                jiandan.grab(root,state_label,start_page.get(),ending_page.get(), var.get(),0)
                 
     
     s_button = ttk.Button(frame, text='Start', command=lambda: get_num(var.get()))
@@ -162,6 +169,9 @@ def main():
     q_button = ttk.Button(frame, text='Quit')
     q_button.grid(row=6,column=2)
     q_button['command'] = lambda: root.destroy()
+    
+    state_label = ttk.Label(frame, text = "Please Input Pages", font = 'Times 10')
+    state_label.grid(row=7,column=0,columnspan=3)
     
     root.mainloop()
 
