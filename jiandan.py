@@ -28,7 +28,8 @@ def grab(start_page,ending_page, lim, amount):
     spacing = -1
     if start_page < ending_page:
         spacing = 1
-        
+    
+    exit_flag=0
     for num in range(start_page,ending_page,spacing): #Start from page 194 to 190, about 100 pics
         url = 'http://jandan.net/ooxx/page-%s#comments' % num
         headers = {
@@ -41,10 +42,19 @@ def grab(start_page,ending_page, lim, amount):
         #targets_url = bf.find_all(class_='view_img_link') #Find the links of all pics
         if not lim:
             targets_url = bf.find_all(class_='view_img_link')
+            for each in targets_url:
+                list_url.append('http:' + each.get('href')) #Rewrite the link infor
         else:
             targets_url = bf.find_all(class_='view_img_link', limit=amount)
-        for each in targets_url:
-            list_url.append('http:' + each.get('href')) #Rewrite the link infor
+            for each in targets_url:
+                if len(list_url) < amount:
+                    list_url.append('http:' + each.get('href')) #Rewrite the link infor
+                else:
+                    exit_flag=1
+                    break
+            
+        if exit_flag:
+            break
 
     print('Obtained all links')
     

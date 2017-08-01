@@ -6,7 +6,7 @@ Created on Mon Jul 24 09:32:43 2017
 """
 
 import tkinter
-from tkinter import *
+from tkinter import ttk
 import jiandan
 import newest_page
 
@@ -63,6 +63,10 @@ def go_on():
     ask.tk_proceed()
     return ask.return_value
 
+def grid_widgets(widgets,rows,columns,columnspans):
+    for i in range(0,len(widgets)):
+        widgets[i].grid(row=rows[i],column=columns[i],columnspan = columnspans[i])
+
 #The main root of the pic grabber
 def main():
     root = tkinter.Tk()
@@ -106,21 +110,22 @@ def main():
     ending_page = ttk.Entry(frame, width=15)
     ending_page.grid(row=3,column=1,columnspan = 2)
     
-    var = BooleanVar()
-    pic_num_ind = ttk.Checkbutton(frame, text = 'Assign Picture Quantity', variable = var)
-    pic_num_ind.grid(row=4, column=1, columnspan=1)
-    
     pic_num = ttk.Entry(frame, width=15)
-    pic_num.grid(row=5,column=1,columnspan = 2)
+    #pic_num.grid(row=5,column=1,columnspan = 2)
+    
+    pic_label = ttk.Label(frame, text = 'Pic Number', font = 'Times 10')
+    #pic_label.grid(row=5,column=0)
+    
+    var = tkinter.BooleanVar()
+    pic_num_ind = ttk.Checkbutton(frame, text = 'Assign Picture Quantity', variable = var,
+                                  command=lambda: grid_widgets([pic_num,pic_label],[5,5],[1,0],[2,1]))
+    pic_num_ind.grid(row=4, column=1, columnspan=1)
     
     sp_label = ttk.Label(frame, text = 'Start Page', font = 'Times 10')
     sp_label.grid(row=2,column=0)
     
     ep_label = ttk.Label(frame, text = 'End Page', font = 'Times 10')
     ep_label.grid(row=3,column=0)
-        
-    pic_label = ttk.Label(frame, text = 'Pic Number', font = 'Times 10')
-    pic_label.grid(row=5,column=0)
      
     #Check if the starting page and the ending page are illegal
     def check_run():
@@ -138,11 +143,12 @@ def main():
             return False
         return True
     #Grab the pictures unless the pic_num input is illegal
-    def get_num(bool):
+    def get_num(booln):
         if check_run(): 
-            if bool:
+            if booln:
                 try: 
                     num = int(pic_num.get())
+                    print("limit is %d pictures"%num)
                     jiandan.grab(start_page.get(),ending_page.get(), var.get(),num)
                 except:
                     warn('Please enter an integer for pic quantity!').tk_instance()
