@@ -109,7 +109,7 @@ def main():
     MainLabel.grid(row=0,column=0,columnspan=3,sticky='n')
     
     newest = newest_page.get_newest()
-    newest_indicator = ttk.Label(frame, text = 'The newest page avaliable is ' + 
+    newest_indicator = ttk.Label(frame, text = 'The latest page avaliable is ' + 
                                  str(newest), font = 'Times 14')
     newest_indicator.grid(row = 1, column = 0, columnspan=3,sticky='n')
     
@@ -131,6 +131,7 @@ def main():
         else:
             for i in range(0,len(widgets)):
                 widgets[i].grid_remove()
+                
     var = tkinter.BooleanVar()
     pic_num_ind = ttk.Checkbutton(frame, text = 'Assign Picture Quantity', variable = var,
                                command=lambda: callCheckButton(root,var,[pic_num,pic_label],[5,5],[1,0],[2,1]))
@@ -146,7 +147,7 @@ def main():
     state_label = ttk.Label(frame, text = "Please Input Pages", font = 'Times 10')
     state_label.grid(row=7,column=0,columnspan=3)
     
-    grab = myThread(root,state_label,1,1,True,0) #Create a thread to wait for the inputs
+#    grab = myThread(root,state_label,1,1,True,0) #Create a thread to wait for the inputs
     
     #Check if the starting page and the ending page are illegal
     def check_run():
@@ -166,12 +167,15 @@ def main():
     
     #Grab the pictures unless the pic_num input is illegal
     def get_num(booln):
+        grab = myThread(root,state_label,-1,-1,True,0)
         if check_run(): 
             try: 
                 if booln:
                     num = int(pic_num.get())
                 else:
                     num = 0
+#                print("win"+start_page.get()+ending_page.get()+str(num))
+#                print(var.get())
                 grab.start_page = start_page.get()
                 grab.ending_page = ending_page.get()
                 grab.amount = num
@@ -179,10 +183,13 @@ def main():
                 grab.setDaemon(True)
             except:
                 warn('Please enter an integer for pic quantity!').tk_instance()
+        return grab
         
     def call_start():
-        get_num(var.get())
-        grab.start()
+        grab = get_num(var.get())
+        if grab.start_page != -1:
+            grab.start()
+            
     s_button = ttk.Button(frame, text='Start', command=lambda: call_start())
     s_button.grid(row=6,column=0)
     
@@ -196,6 +203,7 @@ def main():
             else:
                 button['text'] = 'Pause'
                 pausing = not pausing
+                
     p_button = ttk.Button(frame, text='Pause', command=lambda: pause_grab(p_button))
     p_button.grid(row=6,column=1)
     
