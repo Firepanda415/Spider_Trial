@@ -193,18 +193,19 @@ def main():
     s_button = ttk.Button(frame, text='Start', command=lambda: call_start())
     s_button.grid(row=6,column=0)
     
+    global pausing
     pausing = False
     def pause_grab(button):
+        global pausing
         if True:
-            global pausing
             if pausing:
-                button['text'] = 'Continue'
+                button['text'] = 'Hide Image'
                 pausing = not pausing
             else:
-                button['text'] = 'Pause'
+                button['text'] = 'Show Image'
                 pausing = not pausing
                 
-    p_button = ttk.Button(frame, text='Pause', command=lambda: pause_grab(p_button))
+    p_button = ttk.Button(frame, text='Show Image', command=lambda: pause_grab(p_button))
     p_button.grid(row=6,column=1)
     
     def call_quit():
